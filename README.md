@@ -1,7 +1,7 @@
 TextToSpeech Sample
 ====================
 
-![Scheme](/readmeImages/device-2017-03-11-172715.png)
+![Scheme](/readmeImages/Screenshot_1521127242.png)
 
 Android application to learn text to speech in Android.
 How to switch languages in application Settings.
