@@ -9,9 +9,8 @@ import com.xengar.android.texttospeechsample.Constants.LOG
 import java.util.*
 
 /**
- * Created by xengar on 2018-03-15.
+ * ActivityUtils
  */
-
 object ActivityUtils {
 
 
@@ -22,7 +21,7 @@ object ActivityUtils {
     fun configureTextToSpeechLanguage(tts: TextToSpeech?, status: Int) {
         if (status == TextToSpeech.SUCCESS) {
             // TODO: Use the available languages and select one in app settings
-            val result = tts!!.setLanguage(Locale("spa", "MEX"))
+            val result = tts!!.setLanguage(Locale.ENGLISH)
             if (result == TextToSpeech.LANG_MISSING_DATA
                     || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                 if (LOG) {
