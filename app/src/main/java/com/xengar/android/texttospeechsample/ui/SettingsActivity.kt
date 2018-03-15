@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.xengar.android.texttospeechsample
+package com.xengar.android.texttospeechsample.ui
 
 import android.annotation.TargetApi
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.media.RingtoneManager
 import android.net.Uri
@@ -31,6 +32,8 @@ import android.preference.PreferenceManager
 import android.preference.RingtonePreference
 import android.text.TextUtils
 import android.view.MenuItem
+import com.xengar.android.texttospeechsample.R
+import com.xengar.android.texttospeechsample.utils.ActivityUtils
 
 /**
  * A [PreferenceActivity] that presents a set of application settings. On
@@ -88,6 +91,10 @@ class SettingsActivity : AppCompatPreferenceActivity() {
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     class GeneralPreferenceFragment : PreferenceFragment() {
+
+        private val sharedPrefsChangeListener =
+                SharedPreferences.OnSharedPreferenceChangeListener { _, _ -> updateSummary() }
+
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             addPreferencesFromResource(R.xml.pref_general)
@@ -99,6 +106,8 @@ class SettingsActivity : AppCompatPreferenceActivity() {
             // guidelines.
             bindPreferenceSummaryToValue(findPreference("example_text"))
             bindPreferenceSummaryToValue(findPreference("example_list"))
+
+            bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_font_size)))
         }
 
         override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -108,6 +117,26 @@ class SettingsActivity : AppCompatPreferenceActivity() {
                 return true
             }
             return super.onOptionsItemSelected(item)
+        }
+
+        private fun updateSummary() {
+            val fontPref = findPreference(getString(R.string.pref_font_size))
+            fontPref.summary = ActivityUtils.getPreferenceFontSize(activity)
+        }
+
+        override fun onPause() {
+            super.onPause()
+            preferenceScreen
+                    .sharedPreferences
+                    .unregisterOnSharedPreferenceChangeListener(sharedPrefsChangeListener)
+        }
+
+        override fun onResume() {
+            super.onResume()
+            updateSummary()
+            preferenceScreen
+                    .sharedPreferences
+                    .registerOnSharedPreferenceChangeListener(sharedPrefsChangeListener)
         }
     }
 

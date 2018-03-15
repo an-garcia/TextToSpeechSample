@@ -13,15 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.xengar.android.texttospeechsample
+package com.xengar.android.texttospeechsample.utils
 
 import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
 import android.os.Build
+import android.preference.PreferenceManager
 import android.speech.tts.TextToSpeech
 import android.util.Log
-import com.xengar.android.texttospeechsample.Constants.LOG
+import com.xengar.android.texttospeechsample.R
+import com.xengar.android.texttospeechsample.utils.Constants.LOG
+import com.xengar.android.texttospeechsample.ui.SettingsActivity
+import com.xengar.android.texttospeechsample.utils.Constants.DEFAULT_FONT_SIZE
 import java.util.*
 
 /**
@@ -86,5 +90,17 @@ object ActivityUtils {
         //intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT_TITLE, R.string.settings)
         //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
+    }
+
+
+    /**
+     * Returns the value of show definitions from preferences.
+     * @param context context
+     * @return boolean or default(true)
+     */
+    fun getPreferenceFontSize(context: Context): String {
+        val key = context.getString(R.string.pref_font_size)
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        return prefs.getString(key, DEFAULT_FONT_SIZE)
     }
 }

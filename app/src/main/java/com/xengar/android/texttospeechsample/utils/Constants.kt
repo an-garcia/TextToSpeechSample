@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.xengar.android.texttospeechsample
+package com.xengar.android.texttospeechsample.utils
 
 /**
  * Constants
@@ -31,5 +31,8 @@ object Constants {
      * http://stackoverflow.com/questions/2446248/remove-all-debug-logging-calls-before-publishing-are-there-tools-to-do-this
      */
     val LOG = true
+
+
+    val DEFAULT_FONT_SIZE = "16"
 
 }

@@ -30,4 +30,14 @@
         android:positiveButtonText="@null"
         android:title="@string/pref_title_add_friends_to_messages" />
 
+
+
+    <com.xengar.android.texttospeechsample.utils.FontDialog
+        android:key="@string/pref_font_size"
+        android:title="@string/pref_title_font_size"
+        android:defaultValue="16"
+        android:dialogTitle="@string/pref_title_font_size"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null" />
+
 </PreferenceScreen>

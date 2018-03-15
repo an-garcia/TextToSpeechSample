@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.xengar.android.texttospeechsample
+package com.xengar.android.texttospeechsample.ui
 
 import android.content.Intent
 import android.os.Bundle
@@ -23,6 +23,8 @@ import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
+import com.xengar.android.texttospeechsample.R
+import com.xengar.android.texttospeechsample.utils.ActivityUtils
 
 import kotlinx.android.synthetic.main.activity_main.*
 
