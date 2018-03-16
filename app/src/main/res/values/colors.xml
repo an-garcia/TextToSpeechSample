@@ -21,4 +21,7 @@
 
     <color name="colorBlack">#000000</color>
     <color name="playColor">#E8EAF6</color>
+
+    <color name="backgroundColorWhite">#FFFFFFFF</color>
+    <color name="grey_850">#303030</color> <!-- 212121-->
 </resources>

@@ -30,10 +30,16 @@ import android.preference.PreferenceActivity
 import android.preference.PreferenceFragment
 import android.preference.PreferenceManager
 import android.preference.RingtonePreference
+import android.speech.tts.TextToSpeech
+import android.support.annotation.RequiresApi
 import android.text.TextUtils
+import android.util.Log
 import android.view.MenuItem
 import com.xengar.android.texttospeechsample.R
 import com.xengar.android.texttospeechsample.utils.ActivityUtils
+import com.xengar.android.texttospeechsample.utils.Constants.LOG
+import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * A [PreferenceActivity] that presents a set of application settings. On
@@ -92,8 +98,21 @@ class SettingsActivity : AppCompatPreferenceActivity() {
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     class GeneralPreferenceFragment : PreferenceFragment() {
 
+
+        private val ACT_CHECK_TTS_DATA = 1000
+        private var tts: TextToSpeech? = null
+
         private val sharedPrefsChangeListener =
-                SharedPreferences.OnSharedPreferenceChangeListener { _, _ -> updateSummary() }
+                SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
+                    if (key == getString(R.string.pref_font_size)) {
+                        updateSummary()
+                    } else if (key == getString(R.string.pref_text_to_speech_locale) ) {
+                        // Notifity MainActivity to change language
+                        val intent = Intent(activity, MainActivity::class.java)
+                        intent.action = TextToSpeech.Engine.ACTION_CHECK_TTS_DATA
+                        startActivityForResult(intent, ACT_CHECK_TTS_DATA)
+                    }
+                }
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
@@ -106,8 +125,128 @@ class SettingsActivity : AppCompatPreferenceActivity() {
             // guidelines.
             bindPreferenceSummaryToValue(findPreference("example_text"))
             bindPreferenceSummaryToValue(findPreference("example_list"))
-
             bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_font_size)))
+
+            // Check to see if we have TTS voice data
+            val intent = Intent()
+            intent.action = TextToSpeech.Engine.ACTION_CHECK_TTS_DATA
+            startActivityForResult(intent, ACT_CHECK_TTS_DATA)
+        }
+
+
+        /** Called when returning from startActivityForResult  */
+        override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+            if (requestCode == ACT_CHECK_TTS_DATA) {
+                if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
+                    // data exists, so we instantiate the TTS engine
+                    tts = TextToSpeech(activity, TextToSpeech.OnInitListener { status ->
+                        ActivityUtils.configureTextToSpeechLanguage(tts, status, Locale.UK)
+                        setLanguageOptions()
+                    })
+
+
+                } else {
+
+                    val langPref = findPreference(getString(R.string.pref_text_to_speech_locale)) as ListPreference
+                    langPref.entries = arrayOf("None detected")
+                    langPref.entryValues = arrayOf("None")
+                    if (langPref.value == null) {
+                        langPref.setValueIndex(0)
+                        langPref.summary = "None detected"
+                    }
+                    bindPreferenceSummaryToValue(langPref)
+
+
+                    // data is missing, so we start the TTS installation process
+                    val intent = Intent()
+                    intent.action = TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA
+                    startActivity(intent)
+                }
+            }
+        }
+
+        private fun setLanguageOptions() {
+
+            val languagesAll: ArrayList<Locale> =
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        getSupportedLanguagesLollipop()
+                    } else {
+                        getSupportedLanguagesLegacy()
+                    }
+            // filter to English
+            val languages: List<Locale> = languagesAll.filter { s -> s.toString().contains("en") }
+
+            val entries     = arrayOfNulls<String>(languages.size)
+            val entryValues = arrayOfNulls<String>(languages.size)
+            val currentLocale = ActivityUtils.getPreferenceTextToSpeechLocale(activity)
+            var currentLocaleIndex = 0
+            for (i in languages.indices) {
+                entries[i]     = languages[i].getDisplayName(languages[i])
+                val code = languages[i].isO3Language + ", " + languages[i].isO3Country
+                entryValues[i] = code
+                if (currentLocale.equals(entryValues[i])) {
+                    currentLocaleIndex = i
+                }
+            }
+
+            val langPref = findPreference(getString(R.string.pref_text_to_speech_locale)) as ListPreference
+            langPref.entries = entries
+            langPref.entryValues = entryValues
+
+            if (langPref.value == null) {
+                langPref.setValueIndex(currentLocaleIndex)
+                langPref.summary = currentLocale
+            }
+            bindPreferenceSummaryToValue(langPref)
+        }
+
+        @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+        private fun getSupportedLanguagesLollipop() : ArrayList<Locale> {
+            val languages: ArrayList<Locale> = ArrayList<Locale>()
+            val availableLocales = tts?.getAvailableLanguages()!!
+            for (locale in availableLocales) {
+                languages.add(locale)
+            }
+            return languages
+        }
+
+        private fun getSupportedLanguagesLegacy() : ArrayList<Locale> {
+            val languages: ArrayList<Locale> = ArrayList<Locale>()
+            val allLocales = Locale.getAvailableLocales()
+            for (locale  in allLocales)
+            {
+                try
+                {
+                    val res : Int = tts?.isLanguageAvailable(locale)!!
+                    val hasVariant = null != locale.variant && locale.variant.isNotEmpty()
+                    val hasCountry = null != locale.country && locale.country.isNotEmpty()
+
+                    val isLocaleSupported: Boolean =
+                            !hasVariant && !hasCountry && res == TextToSpeech.LANG_AVAILABLE
+                            || !hasVariant && hasCountry && res == TextToSpeech.LANG_COUNTRY_AVAILABLE
+                            || res == TextToSpeech.LANG_COUNTRY_VAR_AVAILABLE
+
+                    if (LOG) {
+                        Log.d("TTS", "TextToSpeech Engine isLanguageAvailable " + locale
+                                + " (supported=" + isLocaleSupported
+                                + ",res=" + res + ", country=" + locale.getCountry()
+                                + ", variant=" + locale.getVariant() + ")")
+                    }
+
+                    if (isLocaleSupported) {
+                        languages.add(locale)
+                    }
+                }
+                catch (ex : Exception)
+                {
+                    if (LOG) {
+                        Log.e("TTS",
+                                "Error checking if language is available for TTS (locale="
+                                        + locale + "): " + "-" + ex.message)
+                    }
+                }
+            }
+            return languages
         }
 
         override fun onOptionsItemSelected(item: MenuItem): Boolean {

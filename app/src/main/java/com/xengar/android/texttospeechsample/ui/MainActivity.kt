@@ -27,6 +27,7 @@ import com.xengar.android.texttospeechsample.R
 import com.xengar.android.texttospeechsample.utils.ActivityUtils
 
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -41,6 +42,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         text = findViewById(R.id.text)
+        text?.text = "Once upon a time"
 
         // Check to see if we have TTS voice data
         val intent = Intent()
@@ -81,8 +83,7 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == ACT_CHECK_TTS_DATA) {
             if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
                 // data exists, so we instantiate the TTS engine
-                tts = TextToSpeech(this, TextToSpeech.OnInitListener {
-                    status -> ActivityUtils.configureTextToSpeechLanguage(tts, status) })
+                configureTextToSpeech()
             } else {
                 // data is missing, so we start the TTS installation process
                 val intent = Intent()
@@ -90,5 +91,12 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         }
+    }
+
+    private fun configureTextToSpeech() {
+        tts = TextToSpeech(this, TextToSpeech.OnInitListener { status ->
+            val localStr = ActivityUtils.getPreferenceTextToSpeechLocale(applicationContext)
+            val local = ActivityUtils.getTextToSpeechLocale(localStr)
+            ActivityUtils.configureTextToSpeechLanguage(tts, status, local) })
     }
 }

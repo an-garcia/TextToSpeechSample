@@ -2,14 +2,17 @@ TextToSpeech Sample
 ====================
 
 ![Scheme](/readmeImages/Screenshot_1521127242.png)
+![Scheme](/readmeImages/Screenshot_1521200224.png)
 
 Android application to learn text to speech in Android.
 How to switch languages in application Settings.
+It filters languages to English.
 
 
 Pre-requisites
 --------------
 - Android SDK 25 or Higher
+- Internet connection. Text To Speech will try to download the language voice if not installed on the device.
 
 
 References

@@ -26,6 +26,7 @@ import com.xengar.android.texttospeechsample.R
 import com.xengar.android.texttospeechsample.utils.Constants.LOG
 import com.xengar.android.texttospeechsample.ui.SettingsActivity
 import com.xengar.android.texttospeechsample.utils.Constants.DEFAULT_FONT_SIZE
+import com.xengar.android.texttospeechsample.utils.Constants.DEFAULT_LANGUAGE_VARIATION
 import java.util.*
 
 /**
@@ -38,10 +39,10 @@ object ActivityUtils {
      * Configures the language in the speech object.
      * @param tts TextToSpeech
      */
-    fun configureTextToSpeechLanguage(tts: TextToSpeech?, status: Int) {
+    fun configureTextToSpeechLanguage(tts: TextToSpeech?, status: Int, locale: Locale) {
         if (status == TextToSpeech.SUCCESS) {
             // TODO: Use the available languages and select one in app settings
-            val result = tts!!.setLanguage(Locale.ENGLISH)
+            val result = tts!!.setLanguage(locale)
             if (result == TextToSpeech.LANG_MISSING_DATA
                     || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                 if (LOG) {
@@ -88,7 +89,7 @@ object ActivityUtils {
         //        SettingsActivity.GeneralPreferenceFragment::class.java.name)
         //intent.putExtra(PreferenceActivity.EXTRA_NO_HEADERS, true)
         //intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT_TITLE, R.string.settings)
-        //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
     }
 
@@ -102,5 +103,34 @@ object ActivityUtils {
         val key = context.getString(R.string.pref_font_size)
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
         return prefs.getString(key, DEFAULT_FONT_SIZE)
+    }
+
+    /**
+     * Returns the value of show definitions from preferences.
+     * @param context context
+     * @return String
+     */
+    fun getPreferenceTextToSpeechLocale(context: Context): String {
+        val key = context.getString(R.string.pref_text_to_speech_locale)
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        return prefs.getString(key, DEFAULT_LANGUAGE_VARIATION)
+    }
+    /**
+     * Returns the local from a string.
+     * @param localStr preference local string in "language, country" 3 letter codes.
+     * @return Locale
+     */
+    fun getTextToSpeechLocale(localStr: String): Locale {
+        val values = localStr.split(", ")
+        return if (values.size == 2) {
+            when {
+                values[1].contentEquals("GBR") -> Locale.UK
+                values[0].contentEquals("en")
+                        || values[1].contentEquals("USA") -> Locale.US
+                else -> Locale(values[0], values[1])
+            }
+        } else {
+            Locale.US
+        }
     }
 }
