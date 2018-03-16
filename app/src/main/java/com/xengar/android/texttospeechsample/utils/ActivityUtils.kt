@@ -26,7 +26,7 @@ import com.xengar.android.texttospeechsample.R
 import com.xengar.android.texttospeechsample.utils.Constants.LOG
 import com.xengar.android.texttospeechsample.ui.SettingsActivity
 import com.xengar.android.texttospeechsample.utils.Constants.DEFAULT_FONT_SIZE
-import com.xengar.android.texttospeechsample.utils.Constants.DEFAULT_LANGUAGE_VARIATION
+import com.xengar.android.texttospeechsample.utils.Constants.DEFAULT_TTS_LOCALE
 import java.util.*
 
 /**
@@ -106,14 +106,14 @@ object ActivityUtils {
     }
 
     /**
-     * Returns the value of show definitions from preferences.
+     * Returns the value of text to speech locale from preferences.
      * @param context context
      * @return String
      */
     fun getPreferenceTextToSpeechLocale(context: Context): String {
         val key = context.getString(R.string.pref_text_to_speech_locale)
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-        return prefs.getString(key, DEFAULT_LANGUAGE_VARIATION)
+        return prefs.getString(key, DEFAULT_TTS_LOCALE)
     }
     /**
      * Returns the local from a string.

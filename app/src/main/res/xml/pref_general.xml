@@ -50,7 +50,6 @@
         android:positiveButtonText="@null" />  -->
 
     <ListPreference
-        android:defaultValue="English"
         android:key="@string/pref_text_to_speech_locale"
         android:negativeButtonText="@null"
         android:positiveButtonText="@null"

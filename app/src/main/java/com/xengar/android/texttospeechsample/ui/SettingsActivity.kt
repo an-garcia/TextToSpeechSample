@@ -107,7 +107,7 @@ class SettingsActivity : AppCompatPreferenceActivity() {
                     if (key == getString(R.string.pref_font_size)) {
                         updateSummary()
                     } else if (key == getString(R.string.pref_text_to_speech_locale) ) {
-                        // Notifity MainActivity to change language
+                        // Notify MainActivity to change language
                         val intent = Intent(activity, MainActivity::class.java)
                         intent.action = TextToSpeech.Engine.ACTION_CHECK_TTS_DATA
                         startActivityForResult(intent, ACT_CHECK_TTS_DATA)

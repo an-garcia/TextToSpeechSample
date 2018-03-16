@@ -34,6 +34,6 @@ object Constants {
 
 
     val DEFAULT_FONT_SIZE = "16"
-    val DEFAULT_LANGUAGE_VARIATION = "en"
+    val DEFAULT_TTS_LOCALE = "en"
 
 }
