@@ -135,7 +135,7 @@ class SettingsActivity : AppCompatPreferenceActivity() {
 
 
         /** Called when returning from startActivityForResult  */
-        override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+        override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
             if (requestCode == ACT_CHECK_TTS_DATA) {
                 if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
                     // data exists, so we instantiate the TTS engine
@@ -144,18 +144,7 @@ class SettingsActivity : AppCompatPreferenceActivity() {
                         setLanguageOptions()
                     })
 
-
                 } else {
-
-                    val langPref = findPreference(getString(R.string.pref_text_to_speech_locale)) as ListPreference
-                    langPref.entries = arrayOf("None detected")
-                    langPref.entryValues = arrayOf("None")
-                    if (langPref.value == null) {
-                        langPref.setValueIndex(0)
-                        langPref.summary = "None detected"
-                    }
-                    bindPreferenceSummaryToValue(langPref)
-
 
                     // data is missing, so we start the TTS installation process
                     val intent = Intent()

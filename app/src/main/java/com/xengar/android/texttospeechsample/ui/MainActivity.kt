@@ -79,7 +79,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /** Called when returning from startActivityForResult  */
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == ACT_CHECK_TTS_DATA) {
             if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
                 // data exists, so we instantiate the TTS engine
